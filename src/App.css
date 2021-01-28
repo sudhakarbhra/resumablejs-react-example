@@ -25,6 +25,13 @@
 .resumable-browse {
   margin-left: 0.25rem;
   cursor: pointer;
+  background-color: transparent;
+  border: none;
+  padding: 0.5rem;
+  color: #202020;
+}
+.resumable-browse :hover {
+  color: #666;
 }
 .dragover {
   padding: 30px;
@@ -131,4 +138,30 @@
   font-weight: bold;
   font-style: italic;
   transition: all 0.6s ease-in;
+}
+
+.upload-cancel {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  color: #fff;
+  background-color: #d98d4f;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  transition: all 0.6s ease-in;
+}
+
+.progress-resume-link,
+.progress-pause-link,
+.progress-cancel-link {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.progress-resume-link:hover,
+.progress-pause-link:hover,
+.progress-cancel-link:hover {
+  background-color: #b0b0f5;
 }

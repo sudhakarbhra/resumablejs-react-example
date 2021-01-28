@@ -5,6 +5,8 @@ let r;
 const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
   const [showNotSupported, setShowNotSupported] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingFiles, setUploadingFiles] = useState([]);
+  const [progressBar, setProgressBar] = useState(0);
   const [controls, setControls] = useState({
     showPause: true,
     showResume: false,
@@ -12,6 +14,7 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
+  const [showCancel, setShowCancel] = useState(false);
 
   useEffect(() => {
     r = new Resumable({
@@ -33,7 +36,7 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
 
       //   !ERROR : cannot use ref as event `e` is not supported
       if ($("#resumableDrop")) r.assignDrop($("#resumableDrop"));
-      if ($(".resumable-browse")[0]) r.assignBrowse($(".resumable-browse")[0]);
+      if ($("#resumableBrowse")) r.assignBrowse($("#resumableBrowse"));
 
       // Handle file add event
       r.on("fileAdded", (file) => {
@@ -45,7 +48,7 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
         setShowSuccess(false);
         setShowError(false);
 
-        // Add the file to the list
+        // ADDED FILE LIST JQUERY
         $(".resumable-list").append(
           `<li class="resumable-file-${file.uniqueIdentifier}"><span class="resumable-file-name"></span><span class="resumable-file-progress"></span>`
         );
@@ -62,7 +65,7 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
       });
       r.on("complete", function () {
         setUploading(false);
-        setShowSuccess(true);
+        if (!showCancel) setShowSuccess(true);
         // Hide pause/resume when the upload has completed
         setControls({ showCancel: false, showResume: false, showPause: false });
       });
@@ -72,7 +75,7 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
           ".resumable-file-" +
             file.uniqueIdentifier +
             " .resumable-file-progress"
-        ).html("File Uploaded Successfully");
+        ).html("File Uploaded Completed");
       });
       r.on("fileError", function (file, message) {
         setShowError(true);
@@ -81,27 +84,30 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
           ".resumable-file-" +
             file.uniqueIdentifier +
             " .resumable-file-progress"
-        ).html("Something went wrong !! : " + message);
+        ).html("Retrying ...");
       });
       r.on("fileProgress", function (file) {
         // Handle progress for both the file and the overall upload
+
         $(
           ".resumable-file-" +
             file.uniqueIdentifier +
             " .resumable-file-progress"
         ).html(Math.floor(file.progress() * 100) + "%");
-        $(".progress-bar").css({
-          width: Math.floor(r.progress() * 100) + "%",
-        });
+
+        setProgressBar(Math.floor(r.progress() * 100));
       });
       r.on("cancel", function () {
-        $(".resumable-file-progress").html("canceled");
+        setUploading(false);
+        setProgressBar(0);
+        setShowCancel(true);
       });
       r.on("uploadStart", function () {
         // Show pause, hide resume
         setControls({ showCancel: true, showResume: false, showPause: true });
       });
     }
+    // eslint-disable-next-line
   }, [description, event_id, title, token, uploadUrl]);
   const upload = () => {
     r.upload();
@@ -115,8 +121,20 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
   const cancel = () => {
     r.cancel();
     setUploading(false);
+    setProgressBar(0);
+    setShowCancel(true);
     return false;
   };
+
+  // closing notification
+  useEffect(() => {
+    setTimeout(() => {
+      setShowSuccess(false);
+      setShowError(false);
+      setShowCancel(false);
+    }, 2000);
+  }, [showCancel, showSuccess, showError]);
+
   return (
     <section>
       {showNotSupported ? (
@@ -134,9 +152,9 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
         <>
           <div id="resumableDrop" className="resumable-drop">
             Drop video files here to upload or
-            <a className="resumable-browse">
+            <button id="resumableBrowse" className="resumable-browse">
               <u>select from your computer</u>
-            </a>
+            </button>
           </div>
           {uploading && (
             <>
@@ -146,7 +164,10 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
                     <tr>
                       <td width="100%">
                         <div className="progress-container">
-                          <div className="progress-bar"></div>
+                          <div
+                            className="progress-bar"
+                            style={{ width: `${progressBar}%` }}
+                          ></div>
                         </div>
                       </td>
                       <td className="progress-text" nowrap="nowrap"></td>
@@ -211,13 +232,16 @@ const FileUpload = ({ uploadUrl, token, event_id, title, description }) => {
               <ul className="resumable-list"></ul>
             </>
           )}
-          {showSuccess && (
+          {showSuccess && !showCancel && (
             <div className="upload-success">File Uploaded Successfully</div>
           )}
           {showError && (
             <div className="upload-error">
               Something went wrong, Please try again
             </div>
+          )}
+          {showCancel && (
+            <div className="upload-cancel">Upload has been canceled</div>
           )}
         </>
       )}
