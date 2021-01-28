@@ -1,38 +1,134 @@
 .App {
+  padding: 2rem;
+  color: #555;
+}
+
+/* Uploader: Drag & Drop */
+.resumable-error {
+  /* display: none; */
+  font-size: 14px;
+  font-style: italic;
+}
+.resumable-drop {
+  padding: 2rem;
+  font-size: 13px;
   text-align: center;
+  color: #4343f3;
+  font-weight: bold;
+  background-color: #d4d4ff;
+  border: 2px dashed #b0b0f5;
+  border-radius: 10px;
+  margin-top: 40px;
+  z-index: 9999;
+  box-shadow: 6px 0px 10px 0px #efefef;
+}
+.resumable-browse {
+  margin-left: 0.25rem;
+  cursor: pointer;
+}
+.dragover {
+  padding: 30px;
+  color: #555;
+  background-color: #ddd;
+  border: 1px solid #999;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Uploader: Progress bar */
+.resumable-progress {
+  margin: 15px 0 5px;
+  width: 100%;
+  /* display: none; */
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.progress-container {
+  height: 14px;
+  border-radius: 6px;
+  background: #d7f0d1;
+  position: relative;
+}
+.progress-bar {
+  border-radius: 6px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: #4fd33a;
+  background-image: linear-gradient(
+    -45deg,
+    rgba(255, 255, 255, 0.2) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.2) 75%,
+    transparent 75%,
+    transparent
+  );
+  background-size: 50px 50px;
+  animation: move 2s linear infinite;
+  width: 0;
+  transition: all 0.6s ease-in;
+}
+@keyframes move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 50px 50px;
   }
 }
+.resumable-file-progress {
+  font-size: 14px;
+  font-weight: bold;
+}
+.progress-text {
+  font-size: 14px;
+  line-height: 9px;
+  padding-left: 10px;
+}
+.progress-pause {
+  margin-left: 6px;
+}
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Uploader: List of items being uploaded */
+.resumable-list {
+  padding: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 0 6px 0 #f0f0f0;
+  list-style: none;
+}
+.resumable-list li {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 2px solid #f2f2f2;
+}
+.resumable-list li:first-child {
+  padding-top: 0;
+}
+.resumable-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.upload-success {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  color: #fff;
+  background-color: #00ab66;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  transition: all 0.6s ease-in;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.upload-error {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  color: #fff;
+  background-color: #d9534f;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  font-style: italic;
+  transition: all 0.6s ease-in;
 }
